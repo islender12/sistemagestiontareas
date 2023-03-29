@@ -29,8 +29,8 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('logout', 'logout')->name('logout');
 });
 
-Route::get('home', function () {
-    return view('Admin.home');
-})->middleware('auth')->name('home');
 
-Route::resource('/tareas', TareaController::class);
+Route::middleware(['auth'])->group(function () {
+    Route::resource('/tareas', TareaController::class);
+    Route::view('home', 'Admin.home')->name('home');
+});
