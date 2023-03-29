@@ -8,6 +8,7 @@
             <x-sidebar-component />
             <x-principal-content-component>
                 <h1 class="font-bold py-4 uppercase">Crear Tareas</h1>
+                <x-errors-component/>
                 <form action="{{ route('tareas.store') }}" method="POST">
                     @csrf
                     <div class="mt-4 grid gap-4 lg:grid-cols-2">
@@ -48,69 +49,12 @@
                         </div>
                     </div>
                     <div class="mt-6 order">
-                        <button class="rounded-lg bg-[#6a64f1] py-2 px-8 w-full lg:w-auto"
-                            id="guardar">Guardar
+                        <button class="rounded-lg bg-[#6a64f1] py-2 px-8 w-full lg:w-auto" id="guardar">Guardar
                             Tarea</button>
                     </div>
                 </form>
             </x-principal-content-component>
         </div>
     </div>
-    <script>
-        const fechaAsignacion = document.querySelector("#fecha_asignacion");
-        fechaActual = fechaAsignacion.min = fechaAsignacion.min = new Date().toLocaleDateString('es-VE', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        }).split('/').reverse().join('-'); // Establecer la fecha mínima al día de hoy
-
-        const fechaVencimiento = document.querySelector("#fecha_vencimiento");
-        fechaAsignacion.addEventListener('change', actualizarFechaMinima);
-
-        const btnGuardar = document.querySelector("#guardar");
-
-        fechaAsignacion.addEventListener('blur', () => {
-            fechaAsignacion.value < fechaActual ? fechaAsignacion.value = fechaActual : null;
-        })
-        btnGuardar.addEventListener('click', (event) => {
-            const tarea = document.querySelector("#tarea");
-            const proyecto = document.querySelector("#proyecto");
-            const descripcion = document.querySelector("#descripcion");
-            const fechaAsignacionValue = fechaAsignacion.value;
-            const fechaVencimientoValue = fechaVencimiento.value;
-            let validacionExitosa = true;
-
-            tarea.value ? tarea.value : (validacionExitosa = false, console.log("Debes asignar una tarea"));
-            proyecto.value ? proyecto.value : (validacionExitosa = false, console.log(
-                "Debes seleccionar un proyecto"));
-            descripcion.value ? descripcion.value : (validacionExitosa = false, console.log(
-                "Debes agregar una descripción"));
-            fechaAsignacionValue ? fechaAsignacionValue : (validacionExitosa = false, console.log(
-                "Debes agregar una fecha de asignación a la tarea"));
-            fechaVencimientoValue ? fechaVencimientoValue : (validacionExitosa = false, console.log(
-                "Debes agregar una fecha de vencimiento a la tarea"));
-
-            if (!validacionExitosa) {
-                event.preventDefault();
-            }
-        });
-
-        function actualizarFechaMinima() {
-            // Obtener la fecha de asignación seleccionada
-            const fechaAsignacionValue = fechaAsignacion.value;
-            const fechaAsignacionSeleccionada = new Date(fechaAsignacionValue);
-            const fechaVencimientoValue = fechaVencimiento.value;
-            const fechaVencimientoSeleccionada = new Date(fechaVencimientoValue);
-
-            // Obtener el Valor del Input de fecha de vencimiento
-            fechaVencimiento.min = fechaAsignacionValue;
-            // Verificamos si la fecha de vencimiento es menor a la fecha de asignación y si es así actualizarla
-            if (new Date(fechaVencimiento.value) < fechaAsignacionSeleccionada) {
-
-                console.log("La fecha de vencimiento debe ser mayor o igual a la actual");
-                fechaVencimiento.value = fechaAsignacionValue;
-
-            }
-        }
-    </script>
+    @vite('resources/js/tareas.js')
 @endsection
