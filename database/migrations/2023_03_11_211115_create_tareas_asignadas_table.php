@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('tareas_asignadas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('usuario_asignado_id');
-            $table->unsignedBigInteger('tarea_id');
-            $table->string('subtarea');
-            $table->date('fecha_vencimiento');
+            $table->unsignedBigInteger('tarea_id')->unique();
             $table->string('status')->default('pendiente');
             $table->foreign('usuario_asignado_id')->references('id')->on('users')->restrictOnDelete();
             $table->foreign('tarea_id')->references('id')->on('tareas')->restrictOnDelete();

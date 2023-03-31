@@ -65,7 +65,7 @@ class ProyectoController extends Controller
 
     public function obtenerProyectos()
     {
-        $proyectos = Proyecto::latest()->get();
+        $proyectos = Proyecto::latest()->get(['id', 'nombre', 'status']);
         return $proyectos;
     }
 }

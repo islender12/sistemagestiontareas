@@ -99,10 +99,11 @@ form.guardar.addEventListener("click", (event) => {
 
     const btnClose = document.querySelector("#close");
 
+    btnClose ?
     btnClose.addEventListener("click", () => {
         const cardRemove = document.querySelector("#card-error");
         cardRemove.remove();
-    });
+    }) : null;
 });
 
 function actualizarFechaMinima() {

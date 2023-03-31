@@ -7,7 +7,8 @@
     <hr class="my-2 border-slate-700">
     <div id="menu" class="flex flex-col space-y-2 my-5">
 
-        <x-sidebar-nav-link-component class="flex flex-col space-y-2 md:flex-row md:space-y-0 space-x-2 items-center" href="{{route('home')}}">
+        <x-sidebar-nav-link-component class="flex flex-col space-y-2 md:flex-row md:space-y-0 space-x-2 items-center"
+            href="{{ route('home') }}">
             <x-slot name="svg">
                 <i class="fas fa-house-chimney text-2xl m-auto lg:mr-1"></i>
             </x-slot>
@@ -15,7 +16,35 @@
                 Dashboard</p>
             <p class="text-slate-400 text-sm hidden md:block">Modulo Principal</p>
         </x-sidebar-nav-link-component>
-
+        {{-- Menu Desplegable --}}
+        <x-sidebar-nav-menu title="Tareas" class="menudesplegable">
+            <x-slot name="icon">
+                <i class="fas fa-bars-staggered text-2xl m-auto lg:mr-1"></i>
+            </x-slot>
+            <div class="submenu hidden">
+                <x-sidebar-nav-sub-menu-component href="{{ route('tareas.index') }}" title="Tareas">
+                    <x-slot name="icon">
+                        <i class="fas fa-book text-2xl m-auto lg:mr-1"></i>
+                    </x-slot>
+                    {{-- Descripcion corta del modulo --}}
+                    Listar Tareas
+                </x-sidebar-nav-sub-menu-component>
+                <x-sidebar-nav-sub-menu-component href="{{ route('tareas.create') }}" title="Crear Tareas">
+                    <x-slot name="icon">
+                        <i class="fas fa-book text-2xl m-auto lg:mr-1"></i>
+                    </x-slot>
+                    {{-- Descripcion corta del modulo --}}
+                    Creación de Tareas
+                </x-sidebar-nav-sub-menu-component>
+                <x-sidebar-nav-sub-menu-component href="{{ route('asignar.index') }}" title="Subtareas">
+                    <x-slot name="icon">
+                        <i class="fas fa-book text-2xl m-auto lg:mr-1"></i>
+                    </x-slot>
+                    {{-- Descripcion corta del modulo --}}
+                    Creación y Asignación de Subtareas a partir de Tareas
+                </x-sidebar-nav-sub-menu-component>
+            </div>
+        </x-sidebar-nav-menu>
         <x-sidebar-nav-link-component
             class="relative flex flex-col space-y-2 md:flex-row md:space-y-0 space-x-2 items-center">
             <x-slot name="svg">
@@ -26,16 +55,6 @@
             <p class="text-slate-400 text-sm hidden md:block">Chat de la Empresa</p>
             <x-slot name="notification">23</x-slot>
         </x-sidebar-nav-link-component>
-        <x-sidebar-nav-link-component
-            class="relative flex flex-col space-y-2 md:flex-row md:space-y-0 space-x-2 items-center" href="{{route('tareas.index')}}">
-            <x-slot name="redirect">tareas</x-slot>
-            <x-slot name="svg">
-                <i class="fas fa-book text-2xl m-auto lg:mr-1"></i>
-            </x-slot>
-            <p class="font-bold text-base lg:text-lg text-slate-200 leading-4 group-hover:text-indigo-400">
-                Crear Tareas</p>
-            <p class="text-slate-400 text-sm hidden md:block">Creación de Tareas</p>
-        </x-sidebar-nav-link-component>
         <x-sidebar-nav-link-component>
             <x-slot name="svg">
                 <i class="fas fa-user-group text-2xl m-auto lg:mr-1"></i>
@@ -44,7 +63,7 @@
                 Users</p>
             <p class="text-slate-400 text-sm hidden md:block">Manage users</p>
         </x-sidebar-nav-link-component>
-        <x-sidebar-nav-link-component href="{{route('logout')}}">
+        <x-sidebar-nav-link-component href="{{ route('logout') }}">
             <x-slot name="svg">
                 <i class="fas fa-door-open text-2xl m-auto lg:mr-1"></i>
             </x-slot>

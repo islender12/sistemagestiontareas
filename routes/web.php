@@ -33,4 +33,6 @@ Route::controller(AuthController::class)->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('/tareas', TareaController::class);
     Route::view('home', 'Admin.home')->name('home');
+    Route::get('listadotareas', [TareaController::class, 'listar_tareas'])->name('listatareas');
+    Route::get('asignartareas', [TareaController::class, 'asignartareas'])->name('asignar.index');
 });
