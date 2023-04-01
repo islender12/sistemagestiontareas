@@ -10,4 +10,4 @@ menusDesplegables.forEach((menuDesplegable) => {
             Submenu.classList.add("hidden");
         }
     });
-});
+})

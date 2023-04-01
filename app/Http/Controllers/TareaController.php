@@ -37,6 +37,15 @@ class TareaController extends Controller
         return view('Admin.Tarea.Subtarea', compact(['tareas', 'users']));
     }
 
+
+    public function tareasanduser()
+    {
+        $tareas = Tarea::with('proyecto:id,nombre')->where('estatus', '=', 'pendiente')->get();
+        $users = User::all(['id', 'name', 'email']);
+
+        return response()->json(['tareas' => $tareas, 'users' => $users]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

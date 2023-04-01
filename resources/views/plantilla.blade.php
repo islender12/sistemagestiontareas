@@ -11,7 +11,11 @@
 
 <body class="bg-slate-200">
     @yield('container')
+    @vite('resources/js/sweetalert2.js')
     @vite('resources/js/app.js')
+    <script>
+
+    </script>
 </body>
 
 </html>

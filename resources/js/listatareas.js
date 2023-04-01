@@ -1,3 +1,7 @@
+window.addEventListener("DOMContentLoaded", () => {
+    cargarListado();
+});
+
 async function cargarListado(page = "") {
     try {
         const response = await fetch(
@@ -7,8 +11,14 @@ async function cargarListado(page = "") {
         const tbody = document.querySelector("#tbody");
         tbody.innerHTML = "";
         datos.tareas.data.forEach((tarea) => {
+            let buttonAsignar = "";
+            if (tarea.estatus === "pendiente") {
+                buttonAsignar =
+                    '<button class="hover:text-white asignar-tarea" title="Asignar Tarea"><i class="fas fa-hand-pointer"></i></button>';
+            }
+
             const tareaHTML = `
-            <tr class="border-b border-gray-700">
+            <tr class="border-b border-gray-700" data-id="${tarea.id}">
                 <td class="py-3 px-2 font-bold">
                     <div class="inline-flex space-x-3 items-center">
                         <span class="indent-2">${tarea.nombre}</span>
@@ -24,10 +34,8 @@ async function cargarListado(page = "") {
                         <a href="" title="Editar Tarea" class="hover:text-white">
                             <i class="fas fa-pen-to-square"></i>
                         </a>
-                        <button class="eliminar hover:text-white" title="Eliminar Tarea" id="${tarea.id}"><i class="fa-solid fa-trash"></i></button>
-                        <a href="" title="Asignar Tarea" class="hover:text-white">
-                        <i class="fas fa-hand-pointer"></i>
-                    </a>
+                        <button class="eliminar hover:text-white" title="Eliminar Tarea"><i class="fa-solid fa-trash"></i></button>
+                        ${buttonAsignar}
                     </div>
                 </td>
             </tr>`;
@@ -58,20 +66,41 @@ async function cargarListado(page = "") {
         }
 
         paginate.insertAdjacentHTML("beforeend", btnPaginate);
+
+        // Evento del Boton Eliminar
         const btnELiminar = document.querySelectorAll(".eliminar");
         btnELiminar.forEach((eliminar) => {
-            eliminar.addEventListener("click", () => {
-                const tarea = eliminar.getAttribute("id");
-                eliminarTarea(tarea);
+            eliminar.addEventListener("click", (event) => {
+                const tarea = event.target.closest('tr').dataset.id;
+                Swal.fire({
+                    title: "Deseas Eliminar?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, Eliminar!",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarTarea(tarea);
+                    }
+                });
+            });
+        });
+
+        // Evento del Boton Asignar Tarea
+        const butonesAsignar = document.querySelectorAll('.asignar-tarea');
+        butonesAsignar.forEach(botonasignar => {
+            botonasignar.addEventListener('click', (event) => {
+                const tarea = event.target.closest('tr').dataset.id;
+                Swal.fire('Any fool can use a computer')
+                console.log(tarea);
             });
         });
     } catch (error) {
         console.error(error);
     }
 }
-
-cargarListado();
-
 
 async function eliminarTarea(tarea) {
     const token = document.querySelector('meta[name="csrf-token"]').content;
@@ -84,11 +113,23 @@ async function eliminarTarea(tarea) {
             },
         });
         const data = await response.json();
-        console.log(data)
-        // Manejar la respuesta del servidor
+        if (response.status !== 200) {
+            return Swal.fire("Ha Ocurrido Un Error", data.mensaje, "error");
+        }
+
+        Swal.fire(
+            "Eliminado",
+            "Tu registro fue Eliminado Correctamente",
+            "success"
+        );
         cargarListado();
     } catch (error) {
         // Manejar el error de la solicitud
         console.log(error);
     }
+}
+
+
+async function AsignarTarea(){
+
 }
