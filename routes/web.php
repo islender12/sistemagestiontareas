@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TareaController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,9 @@ Route::controller(AuthController::class)->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('/tareas', TareaController::class);
     Route::view('home', 'Admin.home')->name('home');
-    Route::get('listadotareas', [TareaController::class, 'listar_tareas'])->name('listatareas');
-    Route::get('asignartareas', [TareaController::class, 'asignartareas'])->name('asignar.index');
+    Route::controller(TareaController::class)->group(fn () => [
+        Route::get('listadotareas', 'listar_tareas')->name('listatareas'),   
+    ]);
+
+    Route::get('listadousuarios', [UserController::class, 'alluser']);
 });

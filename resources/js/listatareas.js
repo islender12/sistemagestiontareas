@@ -5,18 +5,23 @@ window.addEventListener("DOMContentLoaded", () => {
 async function cargarListado(page = "") {
     try {
         const response = await fetch(
-            `http://gestionproyectos.test/listadotareas?page=${page}`
+            `listadotareas?page=${page}`
         );
         const datos = await response.json();
+        console.log(datos);
         const tbody = document.querySelector("#tbody");
         tbody.innerHTML = "";
+        if (!datos.tareas.total) {
+            const tareaHTML = '<tr><td colspan="7" class="py-8 text-center">No se ha podido encontrar Registros</td></tr>';
+            tbody.innerHTML = tareaHTML;
+        }
+
         datos.tareas.data.forEach((tarea) => {
             let buttonAsignar = "";
             if (tarea.estatus === "pendiente") {
                 buttonAsignar =
                     '<button class="hover:text-white asignar-tarea" title="Asignar Tarea"><i class="fas fa-hand-pointer"></i></button>';
             }
-
             const tareaHTML = `
             <tr class="border-b border-gray-700" data-id="${tarea.id}">
                 <td class="py-3 px-2 font-bold">
@@ -54,15 +59,13 @@ async function cargarListado(page = "") {
         let btnPaginate = "";
 
         if (currentPage > 1) {
-            btnPaginate += `<button onclick="cargarListado(${
-                currentPage - 1
-            })" class="btn bg-black/60 rounded-lg py-2 px-8">Prev</button>`;
+            btnPaginate += `<button onclick="cargarListado(${currentPage - 1
+                })" class="btn bg-black/60 rounded-lg py-2 px-8">Prev</button>`;
         }
 
         if (currentPage < lastPages) {
-            btnPaginate += `<button onclick="cargarListado(${
-                currentPage + 1
-            })" class="btn bg-black/60 rounded-lg py-2 px-8">Next</button>`;
+            btnPaginate += `<button onclick="cargarListado(${currentPage + 1
+                })" class="btn bg-black/60 rounded-lg py-2 px-8">Next</button>`;
         }
 
         paginate.insertAdjacentHTML("beforeend", btnPaginate);
@@ -93,14 +96,41 @@ async function cargarListado(page = "") {
         butonesAsignar.forEach(botonasignar => {
             botonasignar.addEventListener('click', (event) => {
                 const tarea = event.target.closest('tr').dataset.id;
-                Swal.fire('Any fool can use a computer')
-                console.log(tarea);
+
+                cargarUsuarios().then((usuarios) => {
+
+                    // Contruimos el objeto dinamicamente 
+                    const inputOptions = {};
+                    usuarios.users.forEach((usuario) => {
+                        inputOptions[usuario.id] = usuario.name;
+                    });
+                    Swal.fire({
+                        title: 'Asignar Tarea al Usuario',
+                        input: 'select',
+                        inputOptions: inputOptions,
+                        inputPlaceholder: 'Selecciona el usuario',
+                        showCancelButton: true,
+                    })
+
+                });
             });
         });
     } catch (error) {
         console.error(error);
     }
 }
+
+async function cargarUsuarios() {
+    try {
+        const response = await fetch(`listadousuarios`);
+        const datos = await response.json();
+        console.log(datos);
+        return datos;
+    } catch (error) {
+        console.log(datos);
+    }
+}
+
 
 async function eliminarTarea(tarea) {
     const token = document.querySelector('meta[name="csrf-token"]').content;
@@ -129,7 +159,3 @@ async function eliminarTarea(tarea) {
     }
 }
 
-
-async function AsignarTarea(){
-
-}

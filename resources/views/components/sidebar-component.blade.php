@@ -36,13 +36,6 @@
                     {{-- Descripcion corta del modulo --}}
                     Creación de Tareas
                 </x-sidebar-nav-sub-menu-component>
-                <x-sidebar-nav-sub-menu-component href="{{ route('asignar.index') }}" title="Subtareas">
-                    <x-slot name="icon">
-                        <i class="fas fa-book text-2xl m-auto lg:mr-1"></i>
-                    </x-slot>
-                    {{-- Descripcion corta del modulo --}}
-                    Creación y Asignación de Subtareas a partir de Tareas
-                </x-sidebar-nav-sub-menu-component>
             </div>
         </x-sidebar-nav-menu>
         <x-sidebar-nav-link-component
