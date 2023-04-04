@@ -35,7 +35,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/tareas', TareaController::class);
     Route::view('home', 'Admin.home')->name('home');
     Route::controller(TareaController::class)->group(fn () => [
-        Route::get('listadotareas', 'listar_tareas')->name('listatareas'),   
+        Route::get('listadotareas', 'listar_tareas')->name('listatareas'),  
+        Route::post('asignar_tarea_usuario', 'AsignarTareaUsuario')->name('asigned.tarea.user'),
     ]);
 
     Route::get('listadousuarios', [UserController::class, 'alluser']);

@@ -4,21 +4,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
 async function cargarListado(page = "") {
     try {
-        const response = await fetch(
-            `listadotareas?page=${page}`
-        );
+        const response = await fetch(`listadotareas?page=${page}`);
         const datos = await response.json();
-        console.log(datos);
         const tbody = document.querySelector("#tbody");
         tbody.innerHTML = "";
         if (!datos.tareas.total) {
-            const tareaHTML = '<tr><td colspan="7" class="py-8 text-center">No se ha podido encontrar Registros</td></tr>';
+            const tareaHTML =
+                '<tr><td colspan="7" class="py-8 text-center">No se ha podido encontrar Registros</td></tr>';
             tbody.innerHTML = tareaHTML;
         }
 
         datos.tareas.data.forEach((tarea) => {
             let buttonAsignar = "";
-            if (tarea.estatus === "pendiente") {
+            if (tarea.estatus !== "asignado") {
                 buttonAsignar =
                     '<button class="hover:text-white asignar-tarea" title="Asignar Tarea"><i class="fas fa-hand-pointer"></i></button>';
             }
@@ -59,13 +57,15 @@ async function cargarListado(page = "") {
         let btnPaginate = "";
 
         if (currentPage > 1) {
-            btnPaginate += `<button onclick="cargarListado(${currentPage - 1
-                })" class="btn bg-black/60 rounded-lg py-2 px-8">Prev</button>`;
+            btnPaginate += `<button onclick="cargarListado(${
+                currentPage - 1
+            })" class="btn bg-black/60 rounded-lg py-2 px-8">Prev</button>`;
         }
 
         if (currentPage < lastPages) {
-            btnPaginate += `<button onclick="cargarListado(${currentPage + 1
-                })" class="btn bg-black/60 rounded-lg py-2 px-8">Next</button>`;
+            btnPaginate += `<button onclick="cargarListado(${
+                currentPage + 1
+            })" class="btn bg-black/60 rounded-lg py-2 px-8">Next</button>`;
         }
 
         paginate.insertAdjacentHTML("beforeend", btnPaginate);
@@ -74,7 +74,7 @@ async function cargarListado(page = "") {
         const btnELiminar = document.querySelectorAll(".eliminar");
         btnELiminar.forEach((eliminar) => {
             eliminar.addEventListener("click", (event) => {
-                const tarea = event.target.closest('tr').dataset.id;
+                const tarea = event.target.closest("tr").dataset.id;
                 Swal.fire({
                     title: "Deseas Eliminar?",
                     text: "You won't be able to revert this!",
@@ -92,26 +92,33 @@ async function cargarListado(page = "") {
         });
 
         // Evento del Boton Asignar Tarea
-        const butonesAsignar = document.querySelectorAll('.asignar-tarea');
-        butonesAsignar.forEach(botonasignar => {
-            botonasignar.addEventListener('click', (event) => {
-                const tarea = event.target.closest('tr').dataset.id;
+        const butonesAsignar = document.querySelectorAll(".asignar-tarea");
+        butonesAsignar.forEach((botonasignar) => {
+            botonasignar.addEventListener("click", (event) => {
+                const tarea = event.target.closest("tr").dataset.id;
 
                 cargarUsuarios().then((usuarios) => {
-
-                    // Contruimos el objeto dinamicamente 
+                    // Contruimos el objeto dinamicamente
                     const inputOptions = {};
                     usuarios.users.forEach((usuario) => {
                         inputOptions[usuario.id] = usuario.name;
                     });
                     Swal.fire({
-                        title: 'Asignar Tarea al Usuario',
-                        input: 'select',
+                        title: "Asignar Tarea al Usuario",
+                        input: "select",
                         inputOptions: inputOptions,
-                        inputPlaceholder: 'Selecciona el usuario',
+                        inputPlaceholder: "Selecciona el usuario",
                         showCancelButton: true,
-                    })
-
+                        confirmButtonText: "Asignar Tarea",
+                        // inputAttributes: {
+                        //     name: "usuario_asignado",
+                        // },
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const selectedOption = result.value;
+                            AsignarTareaUsuario(tarea, selectedOption);
+                        }
+                    });
                 });
             });
         });
@@ -131,6 +138,34 @@ async function cargarUsuarios() {
     }
 }
 
+async function AsignarTareaUsuario(tarea, usuario) {
+    try {
+        const token = document.querySelector('meta[name="csrf-token"]').content;
+        const response = await fetch("asignar_tarea_usuario", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": token,
+            },
+            body: JSON.stringify({ tarea: tarea, usuario: usuario }),
+        });
+
+        const data = await response.json();
+
+        if (response.status !== 201) {
+            return Swal.fire("Ha Ocurrido Un Error", data.mensaje, "error");
+        }
+
+        Swal.fire(
+            "Tarea Asignada",
+            "La Tarea fue Asignada Correctamente",
+            "success"
+        );
+        cargarListado();
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 async function eliminarTarea(tarea) {
     const token = document.querySelector('meta[name="csrf-token"]').content;
@@ -158,4 +193,3 @@ async function eliminarTarea(tarea) {
         console.log(error);
     }
 }
-

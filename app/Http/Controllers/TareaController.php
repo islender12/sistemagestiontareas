@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\User;
 use App\Models\Tarea;
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\Throw_;
+use App\Events\NewTareaAsignada;
+use Illuminate\Http\JsonResponse;
+use App\Repositories\TareaRepository;
+use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Requests\FormCrearTareaRequest;
-use App\Repositories\TareaRepository;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use App\Http\Requests\AsignaUsuarioTareaRequest;
 
 class TareaController extends Controller
 {
@@ -32,34 +34,35 @@ class TareaController extends Controller
         return view('Admin.Tarea.TareaIndex');
     }
 
-    public function listar_tareas()
+    public function listar_tareas(): JsonResponse
     {
         $tareas = $this->tareaRepository->get_data(['proyecto:id,nombre', 'user:id,name'], 5);
         return response()->json(['tareas' => $tareas], 200);
     }
 
-
-    public function tareasanduser()
-    {
-        $tareas = Tarea::with('proyecto:id,nombre')->where('estatus', '=', 'pendiente')->get();
-        $users = User::all(['id', 'name', 'email']);
-
-        return response()->json(['tareas' => $tareas, 'users' => $users]);
-    }
-
     /**
      * Show the form for creating a new resource.
      */
-    public function create(ProyectoController $proyectoController)
+    public function create(ProyectoController $proyectoController): View
     {
         $proyectos = $proyectoController->obtenerProyectos();
         return view('Admin.Tarea.CrearTarea', compact('proyectos'));
     }
 
+    public function AsignarTareaUsuario(AsignaUsuarioTareaRequest $request): JsonResponse
+    {
+        $tareaAsignada = Tarea::find($request->tarea);
+        $tareaAsignada->users_asigned()->attach($request->usuario);
+
+        event(new NewTareaAsignada($tareaAsignada));
+
+        return response()->json(['mensaje' => 'Se ha Creado Exitosamente'], 201);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(FormCrearTareaRequest $request)
+    public function store(FormCrearTareaRequest $request): RedirectResponse
     {
         try {
             Tarea::create([
