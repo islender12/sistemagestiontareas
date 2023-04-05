@@ -76,3 +76,16 @@ npm install && npm run dev
 ```sh
 php artisan migrate --seed
 ```
+
+```sh
+Configuar Envio de Correo Falso para Pruebas de Correo
+```
+
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="admin@admin.com"
+MAIL_FROM_NAME="${APP_NAME}" 
