@@ -23,7 +23,7 @@ class NewTareaAsignada
      * @param $tarea Instancia de la Clase Tarea
      * @param int $usuario  id del Usuario asignado
      */
-    public function __construct($tarea, $usuario)
+    public function __construct($tarea, int $usuario)
     {
         $this->tarea = $tarea;
         $this->usuarioAsignado = $usuario;

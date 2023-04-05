@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tareas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('descripcion');
+            $table->text('descripcion');
             $table->date('fecha_asignacion');
             $table->date('fecha_vencimiento');
             $table->unsignedBigInteger('user_id')->comment('Usuario Creador de la Tarea');

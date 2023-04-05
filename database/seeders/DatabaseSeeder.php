@@ -17,13 +17,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory(10)->create();
-
-       User::factory()->create([
+        User::factory()->create([
             'name' => 'Islender',
             'email' => 'admin@admin.com',
             'password' => bcrypt('12345678')
         ]);
 
+        Proyecto::factory(10)->create();
+        Tarea::factory(10)->create();
+        
         Permission::create([
             'nombre' => 'Asignar Tareas',
             'descripcion' => 'Permiso para asignar Tareas a Distintos Usuarios'
