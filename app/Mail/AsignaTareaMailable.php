@@ -17,14 +17,12 @@ class AsignaTareaMailable extends Mailable
      * Create a new message instance.
      */
     public $data;
-    public $tarea;
     /**
-     * @param array $tarea [nombre tarea, fecha vencimiento]
+     * @param array $data
      */
-    public function __construct($data, array $tarea)
+    public function __construct($data)
     {
         $this->data = $data;
-        $this->tarea = $tarea;
     }
 
     /**

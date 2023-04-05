@@ -9,7 +9,9 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\Throw_;
 use App\Events\NewTareaAsignada;
+use App\Mail\AsignaTareaMailable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Mail;
 use App\Repositories\TareaRepository;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\ProyectoController;
@@ -51,11 +53,13 @@ class TareaController extends Controller
 
     public function AsignarTareaUsuario(AsignaUsuarioTareaRequest $request): JsonResponse
     {
-        $tareaAsignada = Tarea::find($request->tarea);
-        $tareaAsignada->users_asigned()->attach($request->usuario);
+        (int) $usuario = $request->usuario;
+        (int) $tarea = $request->tarea;
 
-        event(new NewTareaAsignada($tareaAsignada));
-
+        $tareaAsignada = Tarea::with(['proyecto:id,nombre'])->find($tarea);
+        $tareaAsignada->users_asigned()->attach($usuario);
+        // Usaremos El Evento para modificar el status de la Tarea y Enviar el Correo
+        event(new NewTareaAsignada($tareaAsignada, $usuario));
         return response()->json(['mensaje' => 'Se ha Creado Exitosamente'], 201);
     }
 
@@ -111,7 +115,7 @@ class TareaController extends Controller
     {
         // Validamos primero que no tengamos tareas asignadas a algun usuario
         if ($tarea->users_asigned()->exists()) {
-            return response()->json(['mensaje' => 'No se puede eliminar la tarea.'], 409);
+            return response()->json(['mensaje' => 'No se puede eliminar la tarea. Pues se Encuentra Asignada'], 409);
         }
         $tarea->delete();
         return response()->json(['mensaje' => 'Tarea eliminada correctamente']);

@@ -77,7 +77,7 @@ async function cargarListado(page = "") {
                 const tarea = event.target.closest("tr").dataset.id;
                 Swal.fire({
                     title: "Deseas Eliminar?",
-                    text: "You won't be able to revert this!",
+                    text: "¡No podrás revertir esto!",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",
@@ -131,7 +131,6 @@ async function cargarUsuarios() {
     try {
         const response = await fetch(`listadousuarios`);
         const datos = await response.json();
-        console.log(datos);
         return datos;
     } catch (error) {
         console.log(datos);
@@ -151,9 +150,12 @@ async function AsignarTareaUsuario(tarea, usuario) {
         });
 
         const data = await response.json();
-
+        const { mensaje } = data;
+        const keys = Object.keys(mensaje);
+        const errorField = keys[0];
+        const errorMessage = mensaje[errorField][0];
         if (response.status !== 201) {
-            return Swal.fire("Ha Ocurrido Un Error", data.mensaje, "error");
+            return Swal.fire("Ha Ocurrido Un Error", errorMessage, "error");
         }
 
         Swal.fire(

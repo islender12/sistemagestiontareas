@@ -2,9 +2,12 @@
 
 namespace App\Listeners;
 
+use App\Models\User;
 use App\Events\NewTareaAsignada;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Mail\AsignaTareaMailable;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NewTareaAsignadaListener
 {
@@ -22,8 +25,11 @@ class NewTareaAsignadaListener
     public function handle(NewTareaAsignada $event): void
     {
         //
+        $usuario = User::find($event->usuarioAsignado);
         $tarea = $event->tarea;
         $tarea->estatus = "asignado";
         $tarea->save();
+        $correo = new AsignaTareaMailable(['tarea' => $tarea]);
+        Mail::to($usuario->email)->send($correo);
     }
 }

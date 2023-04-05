@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\User;
 use App\Models\Tarea;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
@@ -16,13 +17,16 @@ class NewTareaAsignada
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $tarea;
+    public $usuarioAsignado;
     /**
      * Create a new event instance.
-     * @param $tarea Tarea 
+     * @param $tarea Instancia de la Clase Tarea
+     * @param int $usuario  id del Usuario asignado
      */
-    public function __construct(Tarea $tarea)
+    public function __construct($tarea, $usuario)
     {
         $this->tarea = $tarea;
+        $this->usuarioAsignado = $usuario;
     }
 
     /**
