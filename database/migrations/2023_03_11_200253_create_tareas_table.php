@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('fecha_vencimiento');
             $table->unsignedBigInteger('user_id')->comment('Usuario Creador de la Tarea');
             $table->unsignedBigInteger('proyecto_id')->comment('Proyecto al que Pertenece la Tarea');
-            $table->string('estatus')->default('pendiente');
+            $table->string('estatus')->default('sin asignar');
             $table->foreign('user_id')->references('id')->on('users')->restrictOnDelete();
             $table->foreign('proyecto_id')->references('id')->on('proyectos')->restrictOnDelete();
             $table->timestamps();
