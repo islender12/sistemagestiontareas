@@ -57,18 +57,29 @@ async function cargarListado(page = "") {
         let btnPaginate = "";
 
         if (currentPage > 1) {
-            btnPaginate += `<button onclick="cargarListado(${
-                currentPage - 1
-            })" class="btn bg-black/60 rounded-lg py-2 px-8">Prev</button>`;
+            btnPaginate += `<button id="prev" class="btn bg-black/60 rounded-lg py-2 px-8">Prev</button>`;
         }
 
         if (currentPage < lastPages) {
-            btnPaginate += `<button onclick="cargarListado(${
-                currentPage + 1
-            })" class="btn bg-black/60 rounded-lg py-2 px-8">Next</button>`;
+            btnPaginate += `<button id="next" class="btn bg-black/60 rounded-lg py-2 px-8">Next</button>`;
         }
 
         paginate.insertAdjacentHTML("beforeend", btnPaginate);
+
+        const btnPrev = document.querySelector("#prev");
+        const btnNext = document.querySelector("#next");
+
+        if (btnNext) {
+            btnNext.addEventListener("click", () => {
+                cargarListado(currentPage + 1);
+            });
+        }
+
+        if (btnPrev) {
+            btnPrev.addEventListener("click", () => {
+                cargarListado(currentPage - 1);
+            });
+        }
 
         // Evento del Boton Eliminar
         const btnELiminar = document.querySelectorAll(".eliminar");
