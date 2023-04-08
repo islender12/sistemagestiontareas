@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TareaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TareaController;
+use App\Http\Controllers\ProyectoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,11 +34,16 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('/tareas', TareaController::class);
+    Route::resource('/proyectos', ProyectoController::class);
     Route::view('home', 'Admin.home')->name('home');
+
     Route::controller(TareaController::class)->group(fn () => [
-        Route::get('listadotareas', 'listar_tareas')->name('listatareas'),  
+        Route::get('listadotareas', 'listar_tareas')->name('listatareas'),
         Route::post('asignar_tarea_usuario', 'AsignarTareaUsuario')->name('asigned.tarea.user'),
     ]);
 
     Route::get('listadousuarios', [UserController::class, 'alluser']);
+    Route::controller(ProyectoController::class)->group(fn () => [
+        Route::get('allprojects', 'allprojects')->name('proyectos.allprojects'),
+    ]);
 });

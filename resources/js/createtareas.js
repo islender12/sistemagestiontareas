@@ -81,7 +81,7 @@ form.guardar.addEventListener("click", (event) => {
     if (!validacionExitosa) {
         const errorHtml = `
         <div class="bg-red-500 h-auto w-full p-4 rounded-lg" id="card-error">
-            <div class="float-right" id="close"><i class="fas fa-times"></i></div>
+            <div class="float-right hover:cursor-pointer" id="close"><i class="fas fa-times"></i></div>
             <ul class="flex flex-col gap-4 lg:gap-2">
                 ${errors.map((error) => `<li>- ${error}</li>`).join("")}
             </ul>
@@ -99,11 +99,12 @@ form.guardar.addEventListener("click", (event) => {
 
     const btnClose = document.querySelector("#close");
 
-    btnClose ?
-    btnClose.addEventListener("click", () => {
-        const cardRemove = document.querySelector("#card-error");
-        cardRemove.remove();
-    }) : null;
+    btnClose
+        ? btnClose.addEventListener("click", () => {
+              const cardRemove = document.querySelector("#card-error");
+              cardRemove.remove();
+          })
+        : null;
 });
 
 function actualizarFechaMinima() {

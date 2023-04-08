@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Repositories\UserRepository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
@@ -23,9 +24,20 @@ class UserController extends Controller
         //
     }
 
+    /**
+     * En este ejemplo, estamos usando la función remember() para almacenar en caché
+     *  los resultados de la consulta a la tabla de "users" 
+     * durante un período de tiempo determinado. 
+     * Si la caché ya contiene los resultados de la consulta, se devolverán
+     *  los resultados almacenados en caché en lugar de realizar una
+     *  nueva consulta a la base de datos. Esto reduce significativamente
+     *  la cantidad de consultas a la base de datos y mejora el rendimiento de la aplicación.
+     */
     public function alluser(): JsonResponse
     {
-        $users = $this->userRepository->selectColumns(['id', 'name']);
+        $users = Cache::remember('users', 5, function () {
+            return $this->userRepository->selectColumns(['id', 'name']);
+        });
 
         return response()->json(['users' => $users], 200);
     }

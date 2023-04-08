@@ -16,6 +16,15 @@
                 Dashboard</p>
             <p class="text-slate-400 text-sm hidden md:block">Modulo Principal</p>
         </x-sidebar-nav-link-component>
+        <x-sidebar-nav-link-component class="flex flex-col space-y-2 md:flex-row md:space-y-0 space-x-2 items-center"
+            href="{{ route('proyectos.index') }}">
+            <x-slot name="svg">
+                <i class="fas fa-diagram-project text-2xl m-auto lg:mr-1"></i>
+            </x-slot>
+            <p class="font-bold text-base lg:text-lg text-slate-200 leading-4 group-hover:text-indigo-400">
+                Proyectos</p>
+            <p class="text-slate-400 text-sm hidden md:block">Crear Proyectos</p>
+        </x-sidebar-nav-link-component>
         {{-- Menu Desplegable --}}
         <x-sidebar-nav-menu title="Tareas" class="menudesplegable">
             <x-slot name="icon">

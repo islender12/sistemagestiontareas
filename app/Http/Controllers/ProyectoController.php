@@ -4,15 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Proyecto;
 use Illuminate\Http\Request;
+use App\Repositories\ProyectoRepository;
+use Illuminate\Http\JsonResponse;
 
 class ProyectoController extends Controller
 {
+    private $proyectoRepository;
+
+    public function __construct(ProyectoRepository $proyectoRepository)
+    {
+        $this->proyectoRepository = $proyectoRepository;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return view('Admin.Proyecto.index');
+    }
+
+
+    public function allprojects(): JsonResponse
+    {
+        $proyectos = $this->proyectoRepository->get_data(['tareas'], 5);
+        return response()->json(['proyectos' => $proyectos]);
     }
 
     /**
@@ -28,7 +43,12 @@ class ProyectoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Proyecto::create([
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+        ]);
+
+        return response()->json(['mensaje' => 'Proyecto Creado Exitosamente'], 201);
     }
 
     /**
@@ -52,7 +72,8 @@ class ProyectoController extends Controller
      */
     public function update(Request $request, Proyecto $proyecto)
     {
-        //
+        $proyecto->fill($request->all());
+        $proyecto->save();
     }
 
     /**
@@ -65,7 +86,7 @@ class ProyectoController extends Controller
 
     public function obtenerProyectos()
     {
-        $proyectos = Proyecto::latest()->get(['id', 'nombre', 'status']);
+        $proyectos = Proyecto::latest()->where('status', '=', 1)->get(['id', 'nombre', 'status']);
         return $proyectos;
     }
 }

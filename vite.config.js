@@ -11,6 +11,7 @@ export default defineConfig({
                 "resources/js/app.js",
                 "resources/js/createtareas.js",
                 "resources/js/listatareas.js",
+                "resources/js/proyectos.js",
             ],
             refresh: true,
         }),
