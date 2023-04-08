@@ -49,6 +49,19 @@ async function cargarProyecto(page = "") {
         tbody.insertAdjacentHTML("beforeend", proyectoHTML);
     });
 
+    const Modal = document.querySelector("#modal-component-container");
+    const btnExit = document.querySelector("#exit");
+    btnExit.addEventListener('click', () => {
+        Modal.classList.add("hidden");
+    });
+    const btnMostrar = document.querySelectorAll(".mostrar");
+    btnMostrar.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            Modal.classList.remove("hidden");
+        });
+    });
+
+
     const btnactive = document.querySelectorAll(".active");
     btnactive.forEach((btn) => {
         btn.addEventListener("click", (event) => {
@@ -73,7 +86,6 @@ async function cargarProyecto(page = "") {
             });
         });
     });
-
 
     const paginate = document.querySelector(".paginate");
     paginate.innerHTML = "";
@@ -138,4 +150,3 @@ async function actualizarproyecto(data) {
         console.log(error);
     }
 }
-
