@@ -2,6 +2,12 @@ window.addEventListener("DOMContentLoaded", () => {
     cargarProyecto();
 });
 
+// Funcion asincrona para cargar el proyecto
+
+/**
+ *
+ * @param page numero de paginacion
+ */
 async function cargarProyecto(page = "") {
     const response = await fetch(`allprojects?page=${page}`);
     const dataprojects = await response.json();
@@ -13,6 +19,7 @@ async function cargarProyecto(page = "") {
             ? "<button class='active p-2 rounded-lg bg-slate-800' title='Inhabilitar'>Activo</button>"
             : "Inactivo";
         const cantidadTareas = proyecto.tareas.length;
+        // Traemos la Fecha desde el servidor y le damos formato
         const fecha_creacion = new Date(proyecto.created_at)
             .toLocaleDateString("es-VE", {
                 year: "numeric",
@@ -22,6 +29,8 @@ async function cargarProyecto(page = "") {
             .split("/")
             .reverse()
             .join("-");
+
+        // Creamos cada una de las filas del datatable con su estructura
         const proyectoHTML = `
             <tr class="border-b border-gray-700" data-id="${proyecto.id}">
                 <td class="py-3 px-2 font-bold">
@@ -46,23 +55,27 @@ async function cargarProyecto(page = "") {
                     </div>
                 </td>
             </tr>`;
+        // Insertamos cada una de las filas con su estructura
         tbody.insertAdjacentHTML("beforeend", proyectoHTML);
     });
 
+    // Modal de Mostrar Proyectos
     const Modal = document.querySelector("#modal-component-container");
-    const btnExit = document.querySelector("#exit");
-    btnExit.addEventListener('click', () => {
-        Modal.classList.add("hidden");
-    });
     const btnMostrar = document.querySelectorAll(".mostrar");
+
+    // Creamos el evento click a cada uno de los botones mostrar
     btnMostrar.forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (event) => {
+            const proyecto_id = event.target.closest("tr").dataset.id;
             Modal.classList.remove("hidden");
+            // Funcion que nos genera el modal
+            proyectoshow(proyecto_id, Modal);
         });
     });
 
-
+    // boton inabilitar, activar
     const btnactive = document.querySelectorAll(".active");
+    // Creamos el evento para cada uno de los botones activo
     btnactive.forEach((btn) => {
         btn.addEventListener("click", (event) => {
             const proyecto_id = event.target.closest("tr").dataset.id;
@@ -71,6 +84,7 @@ async function cargarProyecto(page = "") {
                 status: 0,
             };
 
+            // Usamos SweetAlert2
             Swal.fire({
                 title: "Deseas Inhabilitar el Proyecto?",
                 text: "¡No podrás revertir esto!",
@@ -81,12 +95,14 @@ async function cargarProyecto(page = "") {
                 confirmButtonText: "Sí, Inhabilitar!",
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Llamamos a la funcion actualizarproyecto para cambiar el status
                     actualizarproyecto(data);
                 }
             });
         });
     });
 
+    // Estructura de la Paginacion del Datatable
     const paginate = document.querySelector(".paginate");
     paginate.innerHTML = "";
     const lastPages = dataprojects.proyectos.last_page;
@@ -128,7 +144,7 @@ async function cargarProyecto(page = "") {
  *
  * @param {object} data objeto de los datos a actualizar
  */
-
+// Funcion para actualizar el estado del Proyecto
 async function actualizarproyecto(data) {
     try {
         const token = document.querySelector('meta[name="csrf-token"]').content;
@@ -149,4 +165,63 @@ async function actualizarproyecto(data) {
     } catch (error) {
         console.log(error);
     }
+}
+
+// Funcion que nos mostrará el modal de manera Dinamica
+async function proyectoshow(id_proyecto, Modal) {
+    const response = await fetch(`proyectos/${id_proyecto}`);
+    const proyectoshow = await response.json();
+    const proyecto = proyectoshow.proyecto;
+    const tareas = proyectoshow.proyecto.tareas;
+
+    Modal.innerHTML = ` <div
+            class="modal-flex-container flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="modal-bg-container fixed inset-0 bg-gray-700 bg-opacity-75"></div>
+            <div class="modal-space-container hidden sm:inline-block sm:align-middle sm:h-screen"></div>
+            <div
+                class="modal-container inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+                <div class="modal-wrapper bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="modal-wrapper-flex sm:flex sm:items-start">
+                        <div
+                            class="modal-icon mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-paste mx-auto text-xl"></i>
+                        </div>
+                        <div class="modal-content text-center mt-3 sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="font-bold text-gray-900 text-xl">${
+                                proyecto.nombre
+                            }</h3>
+                            <div class="modal-text mt-2">
+                                <p class="text-black font-semibold my-2">Descripción</p>
+                                <p class="text-gray-800 text-left">
+                                    ${proyecto.descripcion}
+                                </p>
+                                <h2 class="my-3 text-black font-semibold">Tareas</h2>
+                                <div>
+                                    <ul class="ml-4 text-left list-disc text-black">
+                                        ${tareas
+                                            .map(
+                                                (tarea) =>
+                                                    `<li>${tarea.nombre}</li>`
+                                            )
+                                            .join("")}
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button id="exit" 
+                        class="w-full inline-flex justify-center rounded-md border-transparent shadow-md px-4 py-2 bg-slate-800 font-medium text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-200 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Salir</button>
+                </div>
+            </div>
+        </div>`;
+
+    // Boton para salir del Modal
+    const btnExit = document.querySelector("#exit");
+    btnExit.addEventListener("click", () => {
+        Modal.classList.add("hidden");
+        Modal.innerHTML = "";
+    });
 }

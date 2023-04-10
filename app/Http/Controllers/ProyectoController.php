@@ -54,9 +54,11 @@ class ProyectoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Proyecto $proyecto)
+    public function show($proyectoid): JsonResponse
     {
-        //
+        $proyecto = Proyecto::with('tareas')->find($proyectoid);
+
+        return response()->json(['proyecto' => $proyecto], 200);
     }
 
     /**
