@@ -24,9 +24,9 @@ class FormCrearTareaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tarea' => 'required|min:10|unique:tareas,nombre',
+            'nombre' => 'required|min:10|unique:tareas,nombre',
             'descripcion' => 'required|min:25',
-            'proyecto' => ['required', 'integer', new ValidarProyectoExistente],
+            'proyecto_id' => ['required', 'integer', new ValidarProyectoExistente],
             'fecha_asignacion' => 'required|date',
             'fecha_vencimiento' => ['required', 'date', new FechaVencimientoValida($this->input('fecha_asignacion'))]
         ];

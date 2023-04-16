@@ -69,14 +69,10 @@ class TareaController extends Controller
     public function store(FormCrearTareaRequest $request): RedirectResponse
     {
         try {
-            Tarea::create([
-                'nombre' => $request->tarea,
-                'descripcion' => $request->descripcion,
-                'fecha_asignacion' => $request->fecha_asignacion,
-                'fecha_vencimiento' => $request->fecha_vencimiento,
-                'user_id' => auth()->user()->id,
-                'proyecto_id' => $request->proyecto
-            ]);
+
+            $tarea = new Tarea($request->all() + ['user_id' => auth()->id()]);
+
+            $tarea = $this->tareaRepository->save($tarea);
 
             return back()->with('status', 'Tarea Creada Exitosamente');
         } catch (\Exception $e) {
@@ -87,9 +83,10 @@ class TareaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Tarea $tarea)
+    public function show($tarea): JsonResponse
     {
-        //
+        $tarea = Tarea::with(['proyecto:id,nombre', 'users_asigned:id,name,email'])->find($tarea);
+        return response()->json(['tarea' => $tarea]);
     }
 
     /**

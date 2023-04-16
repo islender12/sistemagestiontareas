@@ -1,5 +1,6 @@
+@props(['title' => 'Datatable'])
 <div id="last-users">
-    <h1 class="font-bold py-4 uppercase">Last 24h users</h1>
+    <h1 class="font-bold py-4 uppercase">{{$title}}</h1>
     <div class="overflow-x-scroll">
         <table class="w-full text-justify">
             <thead class="bg-black/60">

@@ -19,6 +19,8 @@
                 </x-slot>
             </x-table-component>
         </x-principal-content-component>
+        <div id="modal-component-container" class="hidden fixed inset-0">
+        </div>
     </x-principal-component>
     @vite('resources/js/listatareas.js')
 @endsection

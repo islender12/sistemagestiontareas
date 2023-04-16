@@ -6,6 +6,7 @@ use App\Models\Proyecto;
 use Illuminate\Http\Request;
 use App\Repositories\ProyectoRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class ProyectoController extends Controller
 {
@@ -80,12 +81,21 @@ class ProyectoController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @param $proyecto id del proyecto A eliminar
      */
-    public function destroy(Proyecto $proyecto)
+    public function destroy(Proyecto $proyecto): JsonResponse
     {
-        //
+       if($proyecto->tareas()->exists()){
+            return response()->json(['mensaje' => 'El Proyecto, Tiene Tareas Asignadas'],409);
+       }
+
+       $proyecto->delete();
+
+       return response()->json(['mensaje' => 'Proyecto Eliminado Exitosamente']);
+       
     }
 
+    // Metodo que retorna los Proyectos donde el status es activo (1)
     public function obtenerProyectos()
     {
         $proyectos = Proyecto::latest()->where('status', '=', 1)->get(['id', 'nombre', 'status']);

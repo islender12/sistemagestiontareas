@@ -138,6 +138,26 @@ async function cargarProyecto(page = "") {
             cargarProyecto(currentPage - 1);
         });
     }
+    // Evento del Boton Eliminar
+    const btnELiminar = document.querySelectorAll(".eliminar");
+    btnELiminar.forEach((eliminar) => {
+        eliminar.addEventListener("click", (event) => {
+            const proyecto_id = event.target.closest("tr").dataset.id;
+            Swal.fire({
+                title: "Deseas Eliminar?",
+                text: "¡No podrás revertir esto!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, Eliminar!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    eliminarProyecto(proyecto_id);
+                }
+            });
+        });
+    });
 }
 
 /**
@@ -224,4 +244,31 @@ async function proyectoshow(id_proyecto, Modal) {
         Modal.classList.add("hidden");
         Modal.innerHTML = "";
     });
+}
+
+async function eliminarProyecto(id_proyecto) {
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+    try {
+        const response = await fetch(`proyectos/${id_proyecto}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": token,
+            },
+        });
+        const data = await response.json();
+        if (response.status !== 200) {
+            return Swal.fire("Ha Ocurrido Un Error", data.mensaje, "error");
+        }
+
+        Swal.fire(
+            "Eliminado",
+            "Tu registro fue Eliminado Correctamente",
+            "success"
+        );
+        cargarProyecto();
+    } catch (error) {
+        // Manejar el error de la solicitud
+        console.log(error);
+    }
 }

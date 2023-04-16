@@ -45,4 +45,10 @@ class BaseRepository
         $query = $this->model;
         return $query->get($columns);
     }
+
+    public function save(Model $model)
+    {
+        $model->save();
+        return $model;
+    }
 }

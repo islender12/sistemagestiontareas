@@ -3,8 +3,8 @@
     <x-principal-component>
         <x-sidebar-component />
         <x-principal-content-component>
-            <h1 class="font-bold py-4 uppercase">Listador de Tareas</h1>
-            <x-table-component>
+            <h1 class="font-bold py-4 uppercase">Listador de Proyecto</h1>
+            <x-table-component title="Lista de Proyectos">
                 <x-slot name="thead">
                     <th class="text-center py-3 px-2 rounded-l-lg">Nombre del Proyecto</th>
                     <th class="text-center py-3 px-2">Breve Descripción</th>

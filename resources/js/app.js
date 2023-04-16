@@ -2,8 +2,8 @@ import "./bootstrap";
 const menusDesplegables = document.querySelectorAll(".menudesplegable");
 
 menusDesplegables.forEach((menuDesplegable) => {
-    const Submenu = document.querySelector(".submenu");
     menuDesplegable.addEventListener("click", () => {
+        const Submenu = menuDesplegable.children[1];
         if (Submenu.classList.contains("hidden")) {
             Submenu.classList.remove("hidden");
         } else {

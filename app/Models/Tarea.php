@@ -33,6 +33,6 @@ class Tarea extends Model
 
     public function users_asigned()
     {
-        return $this->belongsToMany(User::class, 'tareas_asignadas', 'tarea_id', 'usuario_asignado_id')->withPivot('subtarea', 'status');
+        return $this->belongsToMany(User::class, 'tareas_asignadas', 'tarea_id', 'usuario_asignado_id')->withPivot('status');
     }
 }

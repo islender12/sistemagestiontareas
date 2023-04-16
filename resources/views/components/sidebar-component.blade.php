@@ -16,17 +16,23 @@
                 Dashboard</p>
             <p class="text-slate-400 text-sm hidden md:block">Modulo Principal</p>
         </x-sidebar-nav-link-component>
-        <x-sidebar-nav-link-component class="flex flex-col space-y-2 md:flex-row md:space-y-0 space-x-2 items-center"
-            href="{{ route('proyectos.index') }}">
-            <x-slot name="svg">
-                <i class="fas fa-diagram-project text-2xl m-auto lg:mr-1"></i>
-            </x-slot>
-            <p class="font-bold text-base lg:text-lg text-slate-200 leading-4 group-hover:text-indigo-400">
-                Proyectos</p>
-            <p class="text-slate-400 text-sm hidden md:block">Crear Proyectos</p>
-        </x-sidebar-nav-link-component>
         {{-- Menu Desplegable --}}
-        <x-sidebar-nav-menu title="Tareas" class="menudesplegable">
+        <x-sidebar-nav-menu title="Proyectos">
+            <x-slot name="icon">
+                <i class="fas fa-bars-staggered text-2xl m-auto lg:mr-1"></i>
+            </x-slot>
+            <div class="submenu hidden">
+                <x-sidebar-nav-sub-menu-component href="{{ route('proyectos.index') }}" title="Proyectos">
+                    <x-slot name="icon">
+                        <i class="fas fa-diagram-project text-2xl m-auto lg:mr-1"></i>
+                    </x-slot>
+                    {{-- Descripcion corta del modulo --}}
+                    Listar Proyectos
+                </x-sidebar-nav-sub-menu-component>
+            </div>
+        </x-sidebar-nav-menu>
+        {{-- Menu Desplegable --}}
+        <x-sidebar-nav-menu title="Tareas">
             <x-slot name="icon">
                 <i class="fas fa-bars-staggered text-2xl m-auto lg:mr-1"></i>
             </x-slot>
