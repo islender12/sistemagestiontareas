@@ -107,12 +107,12 @@ class TareaTest extends TestCase
         $response = $this->actingAs($user);
         $user = Auth::user();
         $response->post('tareas', [
-            'tarea' => 'Crear una interfaz de usuario para el panel de control de TaskMaster',
+            'nombre' => 'Crear una interfaz de usuario para el panel de control de TaskMaster',
             'descripcion' => 'Desarrollar una Interfaz Amigable que brinde una buena experiencia de usuario',
             'fecha_asignacion' => date('2023-03-25'),
             'fecha_vencimiento' => date('2023-04-10'),
             'user_id' => $user->id,
-            'proyecto' => $proyecto->id
+            'proyecto_id' => $proyecto->id
         ])->assertSessionHas('status', 'Tarea Creada Exitosamente');
 
         // Usamos un status 302 

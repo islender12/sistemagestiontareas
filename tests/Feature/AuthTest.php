@@ -27,7 +27,7 @@ class AuthTest extends TestCase
             'email' => 'test@test.com',
             'password' => bcrypt('12345678')
         ]);
-        // Nos Logueamos enviamos es token que genera laravel de sesion y los campos email y password
+        // Nos Logueamos enviamos el token que genera laravel de sesion y los campos email y password
         $response = $this->withSession(['_token' => csrf_token()])
             ->post('login', [
                 'email' => 'test@test.com',

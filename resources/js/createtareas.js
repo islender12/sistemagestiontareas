@@ -1,3 +1,5 @@
+// almacenamos en el objeto form cada de sus propiedades
+// en este caso cada uno de los inputs
 const form = {
     tarea: document.querySelector("#tarea"),
     proyecto: document.querySelector("#proyecto"),

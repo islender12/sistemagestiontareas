@@ -25,11 +25,6 @@ class DatabaseSeeder extends Seeder
 
         Proyecto::factory(10)->create();
         Tarea::factory(10)->create();
-        
-        Permission::create([
-            'nombre' => 'Asignar Tareas',
-            'descripcion' => 'Permiso para asignar Tareas a Distintos Usuarios'
-        ]);
 
         Proyecto::create([
             'nombre' => 'TaskMaster',
