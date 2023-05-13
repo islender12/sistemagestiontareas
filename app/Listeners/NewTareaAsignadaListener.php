@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Jobs\SendTareaAsignadaEmailJob;
 use App\Models\User;
 use App\Events\NewTareaAsignada;
 use App\Mail\AsignaTareaMailable;
@@ -29,7 +30,7 @@ class NewTareaAsignadaListener
         $tarea = $event->tarea;
         $tarea->estatus = "asignado";
         $tarea->save();
-        $correo = new AsignaTareaMailable(['tarea' => $tarea]);
-        Mail::to($usuario->email)->send($correo);
+        SendTareaAsignadaEmailJob::dispatch($usuario, $tarea)->onQueue('emails');
+
     }
 }

@@ -74,11 +74,47 @@ npm install && npm run dev
 ```
 
 ```sh
+php artisan queue:table
 php artisan migrate --seed
 ```
 
 ```sh
 Configuar Envio de Correo Falso para Pruebas de Correo
+```
+#### Debemos cambiar QUEUE_CONNECTION
+```
+QUEUE_CONNECTION=database
+```
+
+##### Para que corran esos jobs tenemos dos opciones
+
+```php
+// Para ambiente de desarrollo
+// Antes de Usar cualquier acción que requiera la cola (queue)
+// debemos ejecutar este comando artisan
+
+// Dicho comando buscará el queue con nombre default
+// Pero si le dimos un nombre al queue como emails
+// No ejecutará las colas con ese nombre
+php artisan queue:listen
+
+// Para ambiente de Producción
+php artisan queue:work
+
+// Dicho comando buscará el queue con nombre default
+// Pero si le dimos un nombre al queue como emails
+// No ejecutará las colas con ese nombre
+// Para resolver debemos indicar el nombre del queue en mi caso emails
+// Y que conexión usa que es database (opcional sí lo indicamos en .env)
+
+php artisan queue:work database --queue=emails
+php artisan queue:listen --queue=emails
+
+// Nota: En producción, lo más común es configurar el proceso
+// del worker de cola como un servicio del sistema,
+// para que se ejecute en segundo plano de forma permanente.
+// Por ejemplo, en Linux puedes crear un archivo en la carpeta
+// /etc/systemd/system con extensión .service
 ```
 
 ```
