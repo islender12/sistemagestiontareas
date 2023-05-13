@@ -3,30 +3,26 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use App\Models\User;
 use App\Models\Tarea;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
-use PhpParser\Node\Expr\Throw_;
 use App\Events\NewTareaAsignada;
-use App\Mail\AsignaTareaMailable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Mail;
 use App\Repositories\TareaRepository;
 use Illuminate\Http\RedirectResponse;
-use App\Http\Controllers\ProyectoController;
 use App\Http\Requests\FormCrearTareaRequest;
 use App\Http\Requests\AsignaUsuarioTareaRequest;
 
 class TareaController extends Controller
 {
 
-    private $tareaRepository;
+    private TareaRepository $tareaRepository;
 
     public function __construct(TareaRepository $tareaRepository)
     {
         $this->tareaRepository = $tareaRepository;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -39,7 +35,7 @@ class TareaController extends Controller
     public function listar_tareas(): JsonResponse
     {
         $tareas = $this->tareaRepository->get_data(['proyecto:id,nombre', 'user:id,name'], 5);
-        return response()->json(['tareas' => $tareas], 200);
+        return response()->json(['tareas' => $tareas]);
     }
 
     /**
@@ -53,14 +49,13 @@ class TareaController extends Controller
 
     public function AsignarTareaUsuario(AsignaUsuarioTareaRequest $request): JsonResponse
     {
-        (int) $usuario = $request->usuario;
-        (int) $tarea = $request->tarea;
-
+        $usuario = $request->usuario;
+        $tarea = $request->tarea;
         $tareaAsignada = Tarea::with(['proyecto:id,nombre'])->find($tarea);
         $tareaAsignada->users_asigned()->attach($usuario);
         // Usaremos El Evento para modificar el status de la Tarea y Enviar el Correo
         event(new NewTareaAsignada($tareaAsignada, $usuario));
-        return response()->json(['mensaje' => 'Se ha Creado Exitosamente'], 201);
+        return response()->json(['mensaje' => 'Se ha Creado Exitosamente', 'id_usuario' => $usuario], 201);
     }
 
     /**

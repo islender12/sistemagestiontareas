@@ -20,7 +20,7 @@ class ProyectoTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function autenticate()
+    public function autenticate(): ProyectoTest
     {
         $user = User::create([
             'name' => 'test',
@@ -28,9 +28,7 @@ class ProyectoTest extends TestCase
             'password' => bcrypt('12345678')
         ]);
 
-        $response = $this->actingAs($user);
-
-        return $response;
+        return $this->actingAs($user);
     }
 
 
@@ -50,7 +48,7 @@ class ProyectoTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $response = $this->autenticate()->get('allprojects');
+        $response = $this->autenticate()->get('projects');
         $response->assertStatus(200);
         $this->assertArrayHasKey('proyectos', $response->json());
     }
@@ -63,7 +61,7 @@ class ProyectoTest extends TestCase
 
         $data = [
             'nombre' => 'Proyecto de Prueba',
-            'descripcion' => 'Este es un  proyecto para poner a prueba a los desarrolladores'
+            'descripcion' => 'Este es un proyecto para poner a prueba a los desarrolladores'
         ];
 
         $response = $this->autenticate()->post('proyectos', $data);

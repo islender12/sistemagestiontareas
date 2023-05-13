@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use App\Repositories\ProyectoRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Contracts\View\View;
 
 class ProyectoController extends Controller
 {
-    private $proyectoRepository;
+    private ProyectoRepository $proyectoRepository;
 
     public function __construct(ProyectoRepository $proyectoRepository)
     {
@@ -19,13 +20,13 @@ class ProyectoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index():View
     {
         return view('Admin.Proyecto.index');
     }
 
 
-    public function allprojects(): JsonResponse
+    public function projects(): JsonResponse
     {
         $proyectos = $this->proyectoRepository->get_data(['tareas'], 5);
         return response()->json(['proyectos' => $proyectos]);
@@ -42,7 +43,7 @@ class ProyectoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         Proyecto::create([
             'nombre' => $request->nombre,
@@ -73,7 +74,7 @@ class ProyectoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Proyecto $proyecto)
+    public function update(Request $request, Proyecto $proyecto): void
     {
         $proyecto->fill($request->all());
         $proyecto->save();
@@ -81,7 +82,8 @@ class ProyectoController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * @param $proyecto id del proyecto A eliminar
+     * @param Proyecto $proyecto id del proyecto A eliminar
+     * @return JsonResponse
      */
     public function destroy(Proyecto $proyecto): JsonResponse
     {
@@ -95,10 +97,9 @@ class ProyectoController extends Controller
        
     }
 
-    // Metodo que retorna los Proyectos donde el status es activo (1)
+    // Método que retorna los Proyectos donde el status es activo (1)
     public function obtenerProyectos()
     {
-        $proyectos = Proyecto::latest()->where('status', '=', 1)->get(['id', 'nombre', 'status']);
-        return $proyectos;
+        return Proyecto::latest()->where('status', '=', 1)->get(['id', 'nombre', 'status']);
     }
 }

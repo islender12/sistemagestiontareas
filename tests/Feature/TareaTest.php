@@ -41,7 +41,7 @@ class TareaTest extends TestCase
     public function test_listadotareas(): void
     {
         $this->withExceptionHandling();
-        $response = $this->autenticate()->get('listadotareas');
+        $response = $this->autenticate()->get('listado_tareas');
         $response->assertStatus(200);
         $this->assertArrayHasKey('tareas', $response->json());
     }

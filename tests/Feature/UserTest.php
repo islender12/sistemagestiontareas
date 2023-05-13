@@ -15,7 +15,7 @@ class UserTest extends TestCase
     {
         $this->withExceptionHandling();
         $user = User::factory()->create();
-        $response = $this->actingAs($user)->get('listadousuarios');
+        $response = $this->actingAs($user)->get('listado_usuarios');
         $response->assertStatus(200);
         $this->assertArrayHasKey('users', $response->json());
     }

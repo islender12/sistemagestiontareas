@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 class UserController extends Controller
 {
 
-    private $userRepository;
+    private UserRepository $userRepository;
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
@@ -33,7 +33,7 @@ class UserController extends Controller
      *  nueva consulta a la base de datos. Esto reduce significativamente
      *  la cantidad de consultas a la base de datos y mejora el rendimiento de la aplicación.
      */
-    public function alluser(): JsonResponse
+    public function users(): JsonResponse
     {
         $users = Cache::remember('users', 5, function () {
             return $this->userRepository->selectColumns(['id', 'name']);

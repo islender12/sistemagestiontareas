@@ -3,8 +3,8 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -16,11 +16,11 @@ class AsignaTareaMailable extends Mailable
     /**
      * Create a new message instance.
      */
-    public $data;
+    public array $data;
     /**
      * @param array $data
      */
-    public function __construct($data)
+    public function __construct(array $data)
     {
         $this->data = $data;
     }
@@ -41,15 +41,15 @@ class AsignaTareaMailable extends Mailable
     public function content(): Content
     {
         return new Content(
-            with: $this->data,
             view: 'Emails.emailTarea',
+            with: $this->data,
         );
     }
 
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {

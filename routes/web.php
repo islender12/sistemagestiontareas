@@ -38,12 +38,12 @@ Route::middleware(['auth'])->group(function () {
     Route::view('home', 'Admin.home')->name('home');
 
     Route::controller(TareaController::class)->group(fn () => [
-        Route::get('listadotareas', 'listar_tareas')->name('listatareas'),
+        Route::get('listado_tareas', 'listar_tareas')->name('lista_tareas'),
         Route::post('asignar_tarea_usuario', 'AsignarTareaUsuario')->name('asigned.tarea.user'),
     ]);
 
-    Route::get('listadousuarios', [UserController::class, 'alluser']);
+    Route::get('listado_usuarios', [UserController::class, 'users']);
     Route::controller(ProyectoController::class)->group(fn () => [
-        Route::get('allprojects', 'allprojects')->name('proyectos.allprojects'),
+        Route::get('projects', 'projects')->name('proyectos.projects'),
     ]);
 });

@@ -6,6 +6,10 @@ use App\Models\Tarea;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * @method static create(array $array)
+ * @method static latest()
+ */
 class Proyecto extends Model
 {
     use HasFactory;

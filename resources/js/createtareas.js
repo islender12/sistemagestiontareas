@@ -1,15 +1,15 @@
 // almacenamos en el objeto form cada de sus propiedades
 // en este caso cada uno de los inputs
 const form = {
-    tarea: document.querySelector("#tarea"),
-    proyecto: document.querySelector("#proyecto"),
+    tarea: document.querySelector("#nombre"),
+    proyecto: document.querySelector("#proyecto_id"),
     descripcion: document.querySelector("#descripcion"),
     fechaAsignacion: document.querySelector("#fecha_asignacion"),
     fechaVencimiento: document.querySelector("#fecha_vencimiento"),
     guardar: document.querySelector("#guardar"),
 };
 
-var cardError = document.querySelector("#card-error");
+const cardError = document.querySelector("#card-error");
 const errorsClass = document.querySelector(".errors");
 const closeButton = document.querySelector("#close");
 
@@ -44,17 +44,19 @@ if (closeButton) {
 }
 
 form.guardar.addEventListener("click", (event) => {
-    // usamos la desestructuracion de objetos
+    // usamos la desestructuración de objetos
 
     // La desestructuración de objetos en JavaScript nos permite
     // extraer valores de propiedades de un objeto y asignarlos a variables individuales,
-    // lo que nos facilita el trabajo al trabajar con objetos.En este caso,
+    // lo que nos facilita el trabajo al trabajar con objetos. En este caso,
     // se está desestructurando el objeto form para obtener las propiedades
     //  tarea, proyecto, descripcion, fechaAsignacion y fechaVencimiento y asignar su valor
     //   a cada una de las constantes correspondientes.
 
-    const { tarea, proyecto, descripcion, fechaAsignacion, fechaVencimiento } =
-        form;
+    const {
+        fechaAsignacion,
+        fechaVencimiento
+    }= form;
 
     const validaciones = {
         tarea: "El campo Tarea es Obligatorio.",
@@ -113,7 +115,6 @@ function actualizarFechaMinima() {
     // Obtener la fecha de asignación seleccionada
     const fechaAsignacionValue = form.fechaAsignacion.value;
     const fechaAsignacionSeleccionada = new Date(fechaAsignacionValue);
-    const fechaVencimientoValue = form.fechaVencimiento.value;
 
     // Obtener el Valor del Input de fecha de vencimiento
     form.fechaVencimiento.min = fechaAsignacionValue;

@@ -1,37 +1,36 @@
 window.addEventListener("DOMContentLoaded", () => {
-  cargarListado();
+  cargarListado().then(() => console.log("Cargado Exitosamente"));
 });
 
 async function cargarListado(page = "") {
   try {
-    const response = await fetch(`listadotareas?page=${page}`);
+    const response = await fetch(`listado_tareas?page=${page}`);
     const datos = await response.json();
+    const {tareas} = datos;
     const tbody = document.querySelector("#tbody");
     tbody.innerHTML = "";
-    if (!datos.tareas.total) {
-      const tareaHTML =
-        '<tr><td colspan="7" class="py-8 text-center">No se ha podido encontrar Registros</td></tr>';
-      tbody.innerHTML = tareaHTML;
+    if (!tareas.total) {
+      tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center">No se ha podido encontrar Registros</td></tr>';
     }
-
-    datos.tareas.data.forEach((tarea) => {
+    tareas.data.forEach((tarea) => {
       let buttonAsignar = "";
-      if (tarea.estatus !== "asignado") {
+      const {id,nombre,fecha_asignacion,fecha_vencimiento,proyecto:{nombre:nombreProyecto},user,estatus} = tarea;
+      if (estatus !== "asignado") {
         buttonAsignar =
           '<button class="hover:text-white asignar-tarea" title="Asignar Tarea"><i class="fas fa-hand-pointer"></i></button>';
       }
       const tareaHTML = `
-            <tr class="border-b border-gray-700" data-id="${tarea.id}">
+            <tr class="border-b border-gray-700" data-id="${id}">
                 <td class="py-3 px-2 font-bold">
                     <div class="inline-flex space-x-3 items-center">
-                        <span class="indent-2">${tarea.nombre}</span>
+                        <span class="indent-2">${nombre}</span>
                     </div>
                 </td>
-                <td class="py-3 px-2">${tarea.fecha_asignacion}</td>
-                <td class="py-3 px-2">${tarea.fecha_vencimiento}</td>
-                <td class="py-3 px-2">${tarea.proyecto.nombre}</td>
-                <td class="py-3 px-2">${tarea.user.name}</td>
-                <td class="py-3 px-2">${tarea.estatus}</td>
+                <td class="py-3 px-2">${fecha_asignacion}</td>
+                <td class="py-3 px-2">${fecha_vencimiento}</td>
+                <td class="py-3 px-2">${nombreProyecto}</td>
+                <td class="py-3 px-2">${user.name}</td>
+                <td class="py-3 px-2">${estatus}</td>
                 <td class="py-3 px-2">
                     <div class="grid grid-cols-2 justify-center gap-4">
                         <a href="" title="Editar Tarea" class="hover:text-white">
@@ -57,15 +56,16 @@ async function cargarListado(page = "") {
         tareashow(tarea_id, Modal);
       });
     });
-
+  const {last_page, current_page, total} = tareas;
     const paginate = document.querySelector(".paginate");
     paginate.innerHTML = "";
-    const lastPages = datos.tareas.last_page;
-    const currentPage = datos.tareas.current_page;
-    const Total = datos.tareas.total;
+    const lastPages = last_page;
+    let currentPage = current_page;
+
+
     const describe = document.querySelector(".describe");
     // Actualizar la descripción sin generarla de nuevo
-    describe.innerHTML = `<p> Mostrando ${currentPage} a ${lastPages} de ${Total} Entradas</p>`;
+    describe.innerHTML = `<p> Mostrando ${currentPage} a ${lastPages} de ${total} Entradas</p>`;
 
     let btnPaginate = "";
 
@@ -84,13 +84,15 @@ async function cargarListado(page = "") {
 
     if (btnNext) {
       btnNext.addEventListener("click", () => {
-        cargarListado(currentPage + 1);
+        currentPage++;
+        cargarListado(currentPage);
       });
     }
 
     if (btnPrev) {
       btnPrev.addEventListener("click", () => {
-        cargarListado(currentPage - 1);
+        currentPage--;
+        cargarListado(currentPage);
       });
     }
 
@@ -100,7 +102,7 @@ async function cargarListado(page = "") {
       eliminar.addEventListener("click", (event) => {
         const tarea = event.target.closest("tr").dataset.id;
         Swal.fire({
-          title: "Deseas Eliminar?",
+          title: "¿Deseas Eliminar?",
           text: "¡No podrás revertir esto!",
           icon: "warning",
           showCancelButton: true,
@@ -116,13 +118,13 @@ async function cargarListado(page = "") {
     });
 
     // Evento del Boton Asignar Tarea
-    const butonesAsignar = document.querySelectorAll(".asignar-tarea");
-    butonesAsignar.forEach((botonasignar) => {
+    const botonesAsignar = document.querySelectorAll(".asignar-tarea");
+    botonesAsignar.forEach((botonasignar) => {
       botonasignar.addEventListener("click", (event) => {
         const tarea = event.target.closest("tr").dataset.id;
 
         cargarUsuarios().then((usuarios) => {
-          // Contruimos el objeto dinamicamente
+          // Construimos el objeto dinámicamente
           const inputOptions = {};
           usuarios.users.forEach((usuario) => {
             inputOptions[usuario.id] = usuario.name;
@@ -153,11 +155,10 @@ async function cargarListado(page = "") {
 
 async function cargarUsuarios() {
   try {
-    const response = await fetch(`listadousuarios`);
-    const datos = await response.json();
-    return datos;
+    const response = await fetch(`listado_usuarios`);
+    return await response.json();
   } catch (error) {
-    console.log(datos);
+    console.log("Ha Ocurrido un Error");
   }
 }
 
@@ -182,12 +183,13 @@ async function AsignarTareaUsuario(tarea, usuario) {
       return Swal.fire("Ha Ocurrido Un Error", errorMessage, "error");
     }
 
-    Swal.fire(
-      "Tarea Asignada",
-      "La Tarea fue Asignada Correctamente",
-      "success"
+    await Swal.fire(
+        "Tarea Asignada",
+        "La Tarea fue Asignada Correctamente",
+        "success"
     );
-    cargarListado();
+    await cargarListado();
+    console.log(data);
   } catch (error) {
     console.log(error);
   }
@@ -204,16 +206,17 @@ async function eliminarTarea(tarea) {
       },
     });
     const data = await response.json();
+    const {mensaje} = data;
     if (response.status !== 200) {
-      return Swal.fire("Ha Ocurrido Un Error", data.mensaje, "error");
+      return Swal.fire("Ha Ocurrido Un Error", mensaje, "error");
     }
 
-    Swal.fire(
-      "Eliminado",
-      "Tu registro fue Eliminado Correctamente",
-      "success"
+    await Swal.fire(
+        "Eliminado",
+        "Tu registro fue Eliminado Correctamente",
+        "success"
     );
-    cargarListado();
+    await cargarListado();
   } catch (error) {
     // Manejar el error de la solicitud
     console.log(error);
@@ -223,8 +226,7 @@ async function eliminarTarea(tarea) {
 async function tareashow(tarea_id, Modal) {
   const response = await fetch(`tareas/${tarea_id}`);
   const { tarea } = await response.json();
-  const { proyecto } = tarea;
-  const { users_asigned } = tarea;
+  const { nombre,descripcion,users_asigned,proyecto:{nombre:nombreProyecto} } = tarea;
 
   const usuario_asignado = users_asigned.length > 0 ? users_asigned[0] : { name: "N/A", email: "N/A", pivot: null};
   
@@ -241,14 +243,14 @@ async function tareashow(tarea_id, Modal) {
                   <i class="fas fa-paste mx-auto text-xl"></i>
               </div>
               <div class="modal-content text-center mt-3 sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3 class="font-bold text-gray-900 text-xl">${tarea.nombre}</h3>
+                  <h3 class="font-bold text-gray-900 text-xl">${nombre}</h3>
                   <div class="modal-text mt-2">
                       <p class="text-black font-semibold my-2">Descripción</p>
-                      <p class="text-gray-800 text-left">
-                          ${tarea.descripcion}
+                      <p class="text-gray-800">
+                          ${descripcion}
                       </p>
                       <h3 class="my-3 text-black font-semibold">Proyecto al Que Pertenece</h3>
-                      <p class="text-gray-900">${proyecto.nombre}</p>
+                      <p class="text-gray-900">${nombreProyecto}</p>
                       <h3 class="my-3 text-black font-semibold">Usuario Asignado</h3>
                       <p class="text-gray-900"> - Nombre: ${usuario_asignado.name}</p>
                       <p class="text-gray-900"> - Correo: ${usuario_asignado.email}</p>

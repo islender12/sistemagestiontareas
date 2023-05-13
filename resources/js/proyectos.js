@@ -1,26 +1,30 @@
 window.addEventListener("DOMContentLoaded", () => {
-    cargarProyecto();
+    cargarProyecto().then(() => console.log("Cargado Exitosamente"));
 });
 
-// Funcion asincrona para cargar el proyecto
+// Función asíncrona para cargar el proyecto
 
 /**
  *
- * @param page numero de paginacion
+ * @param page numero de paginación
  */
 async function cargarProyecto(page = "") {
-    const response = await fetch(`allprojects?page=${page}`);
-    const dataprojects = await response.json();
+    const response = await fetch(`projects?page=${page}`);
+    const projects = await response.json();
+    const {proyectos} = projects;
+    const {data} = proyectos;
+    const {last_page, current_page, total} = proyectos;
     const tbody = document.querySelector("#tbody");
     tbody.innerHTML = "";
 
-    dataprojects.proyectos.data.forEach((proyecto) => {
+    data.forEach((proyecto) => {
         const estado = proyecto.status
             ? "<button class='active p-2 rounded-lg bg-slate-800' title='Inhabilitar'>Activo</button>"
             : "Inactivo";
-        const cantidadTareas = proyecto.tareas.length;
+        const {id,nombre,tareas,descripcion,created_at} = proyecto;
+        const cantidadTareas = tareas.length;
         // Traemos la Fecha desde el servidor y le damos formato
-        const fecha_creacion = new Date(proyecto.created_at)
+        const fecha_creacion = new Date(created_at)
             .toLocaleDateString("es-VE", {
                 year: "numeric",
                 month: "2-digit",
@@ -29,16 +33,15 @@ async function cargarProyecto(page = "") {
             .split("/")
             .reverse()
             .join("-");
-
         // Creamos cada una de las filas del datatable con su estructura
         const proyectoHTML = `
-            <tr class="border-b border-gray-700" data-id="${proyecto.id}">
+            <tr class="border-b border-gray-700" data-id="${id}">
                 <td class="py-3 px-2 font-bold">
                     <div class="inline-flex space-x-3 items-center">
-                        <span class="indent-2">${proyecto.nombre}</span>
+                        <span class="indent-2">${nombre}</span>
                     </div>
                 </td>
-                <td class="py-3 px-2">${proyecto.descripcion.substring(
+                <td class="py-3 px-2">${descripcion.substring(
                     0,
                     30
                 )}...</td>
@@ -73,7 +76,7 @@ async function cargarProyecto(page = "") {
         });
     });
 
-    // boton inabilitar, activar
+    // boton inhabilitar, activar
     const btnactive = document.querySelectorAll(".active");
     // Creamos el evento para cada uno de los botones activo
     btnactive.forEach((btn) => {
@@ -95,19 +98,19 @@ async function cargarProyecto(page = "") {
                 confirmButtonText: "Sí, Inhabilitar!",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Llamamos a la funcion actualizarproyecto para cambiar el status
+                    // Llamamos a la funcion actualizar proyecto para cambiar el status
                     actualizarproyecto(data);
                 }
             });
         });
     });
 
-    // Estructura de la Paginacion del Datatable
+    // Estructura de la Paginación del Datatable
     const paginate = document.querySelector(".paginate");
     paginate.innerHTML = "";
-    const lastPages = dataprojects.proyectos.last_page;
-    const currentPage = dataprojects.proyectos.current_page;
-    const Total = dataprojects.proyectos.total;
+    const lastPages = last_page;
+    let currentPage = current_page;
+    const Total = total;
     const describe = document.querySelector(".describe");
     // Actualizar la descripción sin generarla de nuevo
     describe.innerHTML = `<p> Mostrando ${currentPage} a ${lastPages} de ${Total} Entradas</p>`;
@@ -129,13 +132,15 @@ async function cargarProyecto(page = "") {
 
     if (btnNext) {
         btnNext.addEventListener("click", () => {
-            cargarProyecto(currentPage + 1);
+            currentPage++;
+            cargarProyecto(currentPage);
         });
     }
 
     if (btnPrev) {
         btnPrev.addEventListener("click", () => {
-            cargarProyecto(currentPage - 1);
+            currentPage--;
+            cargarProyecto(currentPage);
         });
     }
     // Evento del Boton Eliminar
@@ -144,7 +149,7 @@ async function cargarProyecto(page = "") {
         eliminar.addEventListener("click", (event) => {
             const proyecto_id = event.target.closest("tr").dataset.id;
             Swal.fire({
-                title: "Deseas Eliminar?",
+                title: "¿Deseas Eliminar?",
                 text: "¡No podrás revertir esto!",
                 icon: "warning",
                 showCancelButton: true,
@@ -178,22 +183,21 @@ async function actualizarproyecto(data) {
         });
         if (response.ok) {
             // Si la respuesta es exitosa, actualiza la lista de proyectos
-            cargarProyecto();
+            await cargarProyecto();
         } else {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+            console.log(`Error ${response.status}: ${response.statusText}`);
         }
     } catch (error) {
         console.log(error);
     }
 }
 
-// Funcion que nos mostrará el modal de manera Dinamica
+// Funcion que nos mostrará el modal de manera Dinámica
 async function proyectoshow(id_proyecto, Modal) {
     const response = await fetch(`proyectos/${id_proyecto}`);
     const proyectoshow = await response.json();
-    const proyecto = proyectoshow.proyecto;
-    const tareas = proyectoshow.proyecto.tareas;
-
+    const {proyecto} = proyectoshow;
+    const {nombre,descripcion,tareas} = proyecto;
     Modal.innerHTML = ` <div
             class="modal-flex-container flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="modal-bg-container fixed inset-0 bg-gray-700 bg-opacity-75"></div>
@@ -208,12 +212,12 @@ async function proyectoshow(id_proyecto, Modal) {
                         </div>
                         <div class="modal-content text-center mt-3 sm:mt-0 sm:ml-4 sm:text-left">
                             <h3 class="font-bold text-gray-900 text-xl">${
-                                proyecto.nombre
+                                nombre
                             }</h3>
                             <div class="modal-text mt-2">
                                 <p class="text-black font-semibold my-2">Descripción</p>
                                 <p class="text-gray-800 text-left">
-                                    ${proyecto.descripcion}
+                                    ${descripcion}
                                 </p>
                                 <h2 class="my-3 text-black font-semibold">Tareas</h2>
                                 <div>
@@ -257,16 +261,18 @@ async function eliminarProyecto(id_proyecto) {
             },
         });
         const data = await response.json();
-        if (response.status !== 200) {
-            return Swal.fire("Ha Ocurrido Un Error", data.mensaje, "error");
+        const {status} = response;
+        const {mensaje} = data;
+        if (status !== 200) {
+            return Swal.fire("Ha Ocurrido Un Error", mensaje, "error");
         }
 
-        Swal.fire(
+        await Swal.fire(
             "Eliminado",
             "Tu registro fue Eliminado Correctamente",
             "success"
         );
-        cargarProyecto();
+        await cargarProyecto();
     } catch (error) {
         // Manejar el error de la solicitud
         console.log(error);
