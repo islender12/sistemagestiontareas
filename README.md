@@ -65,6 +65,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
+## Pasos para iniciar el Proyecto
 ```sh
 composer install
 ```
@@ -72,18 +73,15 @@ composer install
 ```sh
 npm install && npm run dev
 ```
+## Otros Ajustes
 
-```sh
+#### Debemos cambiar QUEUE_CONNECTION
+```php
+QUEUE_CONNECTION=database
+
+// Si ya existe la migración no es necesario los siguientes comandos
 php artisan queue:table
 php artisan migrate --seed
-```
-
-```sh
-Configuar Envio de Correo Falso para Pruebas de Correo
-```
-#### Debemos cambiar QUEUE_CONNECTION
-```
-QUEUE_CONNECTION=database
 ```
 
 ##### Para que corran esos jobs tenemos dos opciones
@@ -114,9 +112,10 @@ php artisan queue:listen --queue=emails
 // del worker de cola como un servicio del sistema,
 // para que se ejecute en segundo plano de forma permanente.
 // Por ejemplo, en Linux puedes crear un archivo en la carpeta
-// /etc/systemd/system con extensión .service
+// /etc/systemd/system con extensión.service
 ```
-
+## Configurar Envío de Correo Falso para Pruebas de Correo
+#### Configurar el Envío de Correos
 ```
 MAIL_MAILER=smtp
 MAIL_HOST=sandbox.smtp.mailtrap.io
